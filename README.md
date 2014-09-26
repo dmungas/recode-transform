@@ -9,15 +9,15 @@ Transformations that are performed include:
   - Ordinal transformation using equal-interval algorithm
   
 The formula for the Blom transformation is: 
-  y <- qnorm((r-c)/(N-2c+1))
-    where qnorm is the standard normal quantile function
-    r is the rank of your variable
-    c = 3/8, the Blom constant
-    N is the sample size
+  - y <- qnorm((r-c)/(N-2c+1))
+      - where qnorm is the standard normal quantile function
+      - r is the rank of your variable
+      - c = 3/8, the Blom constant
+      - N is the sample size
     
 Equal-quantile ordinal transformation divides the original variable into k categories based on k quantiles; the transformed variable will have a uniform distribution.
 
-Equal-interval ordinal transformation divides the original variable into k categories such that the within category range, in original variable units, is equated across categories. Equal-interval will start with the number of specified categories (ncat) but will iteratively decrease this number until the minimum number of observed responses (nobs) is achieved in each category.
+Equal-interval ordinal transformation divides the original variable into k categories such that the within category range, in original variable units, is equated across categories. The distribution of the transformed variable will approximate that of the original variable. Equal-interval will start with the number of specified categories (ncat) but will iteratively decrease this number until the minimum number of observed responses (nobs) is achieved in each category.
 
 Functions include:
 
