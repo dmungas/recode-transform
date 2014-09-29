@@ -41,11 +41,13 @@ recodeOrdinal(`df, varlist_orig, varlist_tr, type="interval", ncat=10, nobs=10`)
   - output: data frame that consists of the input data frame with recoded variables
 
 recodeLookup(`df, varlist_orig, varlist_tr, type="continuous"`) 
-  - description: This funciton generates a reference table from recoded variables within a dataframe and uses this as a lookup table to recode vales that have not yet been recoded. This is applicable where a subset of records are used for the original recode and this subset is then used as the reference to recode the other records. It is applicable for continuous transformed variables (including but not limited to Blom) and for ordinal transformations.
+  - description: This funciton generates a reference table from recoded variables within a dataframe and uses this as a lookup table to recode vales that have not yet been recoded. The lookup values can from the "internal" input data frame or from an "external" table that has contains the original and recoded variables. "Internal" lookup is applicable where a subset of records are used for the original recode and this subset is then used as the reference to recode the other records. This function applies to continuous transformed variables (including but not limited to Blom) and to ordinal transformations.
   - input parameters: 
       - df - label for the data frame that contains the variables to be recoded (in quotes) as well as recoded variables with recoded values for a subsset of records.
       - varlist_orig - list of labels for the original variables to be recoded
       - varlist_tr - list of labels for the recoded variables
       - type - "continuous" for continuous (numeric) transformation, "ordinal" for ordinal
+      - lookup - NA if the input table (df) will be used to lookup recode values; label for the data frame that contains the variables to be recoded (in quotes) if an external table is used. The external table has to be opened as a dataframe, and must contain all of the columns in varlist_orig and varlist_tr.
+
   - output: data frame that consists of the input dataframe with recoded values for all records for recoded variables
 
