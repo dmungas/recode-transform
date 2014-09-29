@@ -94,18 +94,28 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
 #   varlist_orig - List of labels for the original variables to be recoded
 #   varlist_tr - List of labels for the recoded variables
 #   type - "continuous" for continuous (numeric) transformation, "ordinal" for ordinal
+#   lookup - NA if the input table (df) will be used to lookup recode values; label for the data frame 
+#     that contains the variables to be recoded (in quotes) if an external table is used. The external
+#     table has to be opened as a dataframe, and must contain all of the columns 
+#     in varlist_orig and varlist_tr.
 
-recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous") {
+recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NA) {
   rcd <- eval(parse(text=df))
+  if (is.na(lookup)){
+    rcdlu <- rcd[,c(varlist_orig,varlist_tr)]
+  } else{
+    rcdlu <- eval(parse(text=lookup))
+    rcdlu <- rcdlu[,c(varlist_orig,varlist_tr)]
+  }
   for (j in 1:length(varlist_orig)){
-    t5 <- unique(smc[!is.na(rcd[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
+    t5 <- unique(rcdlu[!is.na(rcdlu[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
     t5 <- t5[order(t5[varlist_orig[j]]),]
     luv <- as.data.frame(cbind(t5,rbind(t5[2:nrow(t5),],c(NA,NA))))
     colnames(luv) <- c("orig_min","tr_min","orig_max","tr_max")
-    mino <- min(rcd[,varlist_orig[j]], na.rm=TRUE)
-    mint <- min(rcd[,varlist_tr[j]], na.rm=TRUE)
-    maxo <- max(rcd[,varlist_orig[j]], na.rm=TRUE)
-    maxt <- max(rcd[,varlist_tr[j]], na.rm=TRUE)
+    mino <- min(rcdlu[,varlist_orig[j]], na.rm=TRUE)
+    mint <- min(rcdlu[,varlist_tr[j]], na.rm=TRUE)
+    maxo <- max(rcdlu[,varlist_orig[j]], na.rm=TRUE)
+    maxt <- max(rcdlu[,varlist_tr[j]], na.rm=TRUE)
     rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] <= mino,mint,rcd[,varlist_tr[j]])
     rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] >= maxo,maxt,rcd[,varlist_tr[j]])
     t3 <- rcd[,c(varlist_orig[j],varlist_tr[j])]
