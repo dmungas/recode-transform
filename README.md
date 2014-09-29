@@ -47,7 +47,7 @@ recodeLookup(`df, varlist_orig, varlist_tr, type="continuous"`)
       - varlist_orig - list of labels for the original variables to be recoded
       - varlist_tr - list of labels for the recoded variables
       - type - "continuous" for continuous (numeric) transformation, "ordinal" for ordinal
-      - lookup - NA if the input table (df) will be used to lookup recode values; label for the data frame that contains the variables to be recoded (in quotes) if an external table is used. The external table has to be opened as a dataframe, and must contain all of the columns in varlist_orig and varlist_tr.
+      - lookup - NA (no parameter input, the default) if the input table (df) will be used to lookup recode values; label for the data frame that contains the variables to be recoded (in quotes) if an external table is used. The external table has to be opened as a dataframe, and must contain all of the columns in varlist_orig and varlist_tr.
 
   - output: data frame that consists of the input dataframe with recoded values for all records for recoded variables
 
