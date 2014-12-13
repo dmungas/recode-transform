@@ -30,7 +30,7 @@ recodeBlom(`df, varlist_orig, varlist_tr`)
   - output: data frame that consists of the input data frame with recoded variables
 
 recodeOrdinal(`df, varlist_orig, varlist_tr, type="interval", ncat=10, nobs=10`) 
-  - description: This function perfroms equal-quantile of equal-interval recoding into ordinal response scale
+  - description: This function performs equal-quantile or equal-interval recoding into ordinal response scale
   - input parameters:
       - df - label for the data frame that contains the variables to be recoded (in quotes)
       - varlist_orig - list of labels for the original variables to be recoded
@@ -43,7 +43,7 @@ recodeOrdinal(`df, varlist_orig, varlist_tr, type="interval", ncat=10, nobs=10`)
 recodeLookup(`df, varlist_orig, varlist_tr, type="continuous"`) 
   - description: This funciton generates a reference table from recoded variables within a dataframe and uses this as a lookup table to recode vales that have not yet been recoded. The lookup values can from the "internal" input data frame or from an "external" table that has contains the original and recoded variables. "Internal" lookup is applicable where a subset of records are used for the original recode and this subset is then used as the reference to recode the other records. This function applies to continuous transformed variables (including but not limited to Blom) and to ordinal transformations.
   - input parameters: 
-      - df - label for the data frame that contains the variables to be recoded (in quotes) as well as recoded variables with recoded values for a subsset of records.
+      - df - label for the data frame that contains the variables to be recoded (in quotes) as well as recoded variables with recoded values for a subset of records.
       - varlist_orig - list of labels for the original variables to be recoded
       - varlist_tr - list of labels for the recoded variables
       - type - "continuous" for continuous (numeric) transformation, "ordinal" for ordinal
