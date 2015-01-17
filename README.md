@@ -19,6 +19,12 @@ Equal-quantile ordinal transformation divides the original variable into k categ
 
 Equal-interval ordinal transformation divides the original variable into k categories such that the within category range, in original variable units, is equated across categories. The distribution of the transformed variable will approximate that of the original variable. Equal-interval will start with the number of specified categories (ncat) but will iteratively decrease this number until the minimum number of observed responses (nobs) is achieved in each category.
 
+Equal-quantile is appropriate for continuous measures where the sample size divided by the
+number of categories is greater than the minimum number of observations desired for each response
+category. Equal-quantile does not work well with ordinal scales that have highly skewed
+distributions; equal-interval is recommended. It is important to check the distributions
+of the recoded variables to assure that the recoding matches the purpose and goals for recoding.
+
 Functions include:
 
 recodeBlom(`df, varlist_orig, varlist_tr`) 
