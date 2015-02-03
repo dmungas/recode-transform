@@ -38,11 +38,11 @@ recodeBlom <- function(df,varlist_orig,varlist_tr){
 #   divides the original variable into k categories with the same range the original variable units.
 #   Equal-interval will start with the number of specified categories (ncat) but will iteratively
 #   decrease this number until the minimum number of observations (nobs) is achieved in each category.
-#   Equal-quantile is approrpiate for continuous measures where the sample size divided by the
-#   number of categoriesis greater than the minimum number of observations for each response
+#   Equal-quantile is appropriate for continuous measures where the sample size divided by the
+#   number of categories is greater than the minimum number of observations desired for each response
 #   category. Equal-quantile does not work well with ordinal scales that have highly skewed
-#   distributions. It is important to check the distributions of the recoded variables to
-#   assure that the recoding matches the purpose and goals for recoding.
+#   distributions; equal-interval is recommended. It is important to check the distributions
+#   of the recoded variables to assure that the recoding matches the purpose and goals for recoding.
 # recodeOrdinal parameters:
 #   df - label for the data frame that contains the variables to be recoded (in quotes)
 #   varlist_orig - List of labels for the original variables to be recoded
@@ -57,25 +57,26 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
     cuts <- {}
     min <- min(tro[,varlist_orig[j]], na.rm=TRUE)
     max <- max(tro[,varlist_orig[j]], na.rm=TRUE)
+    ncat1 <- ncat
     if (type == "interval"){
       go <- TRUE
       repeat{
-        for (i in 1:(ncat+1)){
-          cuts[i] <- min + ((i-1) * ((max - min)/ncat))
+        for (i in 1:(ncat1+1)){
+          cuts[i] <- min + ((i-1) * ((max - min)/ncat1))
         }
         ordt <- cut(tro[,varlist_orig[j]], breaks=cuts, include.lowest=TRUE,
-              labels=c(1:ncat))
-        if (min(table(ordt)) >= nobs | ncat == 2) {go <- FALSE}
-        if (!go) {break}
-        ncat <- ncat-1
+              labels=c(1:ncat1))
+        if (min(table(ordt)) >= nobs | ncat1 == 2) {go <- FALSE}
+        if (go==FALSE) {break}
+        ncat1 <- ncat1-1
         cuts <- {}
       }
     } else {
-        for (i in 1:(ncat+1)){
+        for (i in 1:(ncat1+1)){
           if (i==1){
             cuts[i] <- min
           } else{
-            cuts[i] <- quantile(tro[,varlist_orig[j]],(i-1) * (1.0/ncat), na.rm=TRUE)
+            cuts[i] <- quantile(tro[,varlist_orig[j]],(i-1) * (1.0/ncat1), na.rm=TRUE)
           }  
         }
         cuts <- unique(cuts)
