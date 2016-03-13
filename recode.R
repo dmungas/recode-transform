@@ -1,3 +1,4 @@
+require(sqldf)
 
 # Blom formula
 # y <- qnorm((r-c)/(N-2c+1))
@@ -98,7 +99,7 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
 #   where a subset of records are used for the original recode and this subset is then used 
 #   as the reference to recode the other records. It is applicable for continuous transformed variables
 #   (including but not limited to Blom) and for ordinal transformations.
-# recodeOrdinal parameters:
+# recodeLookup parameters:
 #   df - label for the data frame that contains the variables to be recoded (in quotes)
 #   varlist_orig - List of labels for the original variables to be recoded
 #   varlist_tr - List of labels for the recoded variables
@@ -125,7 +126,7 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NA)
     mint <- min(rcdlu[,varlist_tr[j]], na.rm=TRUE)
     maxo <- max(rcdlu[,varlist_orig[j]], na.rm=TRUE)
     maxt <- max(rcdlu[,varlist_tr[j]], na.rm=TRUE)
-    rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] <= mino,mint,rcd[,varlist_tr[j]])
+    rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] <= mino,mint,NA)
     rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] >= maxo,maxt,rcd[,varlist_tr[j]])
     t3 <- rcd[,c(varlist_orig[j],varlist_tr[j])]
     sqlcd <- paste("SELECT * FROM t3 AS t3
