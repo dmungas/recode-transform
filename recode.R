@@ -109,6 +109,12 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
 #     table has to be opened as a dataframe, and must contain all of the columns 
 #     in varlist_orig and varlist_tr.
 
+#   df <- "adni_imag"
+#   varlist_orig <- blomvarin
+#   varlist_tr <- blomvarout
+#   type <- "continuous"
+#   lookup <- NA
+
 recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NA) {
   rcd <- eval(parse(text=df))
   if (is.na(lookup)){
@@ -122,10 +128,14 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NA)
     t5 <- t5[order(t5[varlist_orig[j]]),]
     luv <- as.data.frame(cbind(t5,rbind(t5[2:nrow(t5),],c(NA,NA))))
     colnames(luv) <- c("orig_min","tr_min","orig_max","tr_max")
-    mino <- min(rcdlu[,varlist_orig[j]], na.rm=TRUE)
-    mint <- min(rcdlu[,varlist_tr[j]], na.rm=TRUE)
-    maxo <- max(rcdlu[,varlist_orig[j]], na.rm=TRUE)
-    maxt <- max(rcdlu[,varlist_tr[j]], na.rm=TRUE)
+    mino <- min(luv[,"orig_min"], na.rm=TRUE)
+    mint <- min(luv[,"tr_min"], na.rm=TRUE)
+    maxo <- max(luv[,"orig_max"], na.rm=TRUE)
+    maxt <- max(luv[,"tr_max"], na.rm=TRUE)
+#     mino <- min(rcdlu[,varlist_orig[j]], na.rm=TRUE)
+#     mint <- min(rcdlu[,varlist_tr[j]], na.rm=TRUE)
+#     maxo <- max(rcdlu[,varlist_orig[j]], na.rm=TRUE)
+#     maxt <- max(rcdlu[,varlist_tr[j]], na.rm=TRUE)
     rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] <= mino,mint,NA)
     rcd[,varlist_tr[j]] <- ifelse(rcd[,varlist_orig[j]] >= maxo,maxt,rcd[,varlist_tr[j]])
     t3 <- rcd[,c(varlist_orig[j],varlist_tr[j])]
@@ -137,7 +147,11 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NA)
         " < luv1.orig_max",sep="")
     t4 <- sqldf(sqlcd)
     if (type == "continuous") {
-      t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],( ( (t4[,varlist_orig[j]] - t4$orig_min) / (t4$orig_max - t4$orig_min) ) * (t4$tr_max - t4$tr_min) ) + t4$tr_min)
+      t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],
+            ifelse(t4[,varlist_orig[j]] >= maxo,maxt,
+            ( ( (t4[,varlist_orig[j]] - t4$orig_min) / (t4$orig_max - t4$orig_min) ) *
+                (t4$tr_max - t4$tr_min) ) + t4$tr_min))
+#       t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],( ( (t4[,varlist_orig[j]] - t4$orig_min) / (t4$orig_max - t4$orig_min) ) * (t4$tr_max - t4$tr_min) ) + t4$tr_min)
     } else {
       t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],t4$tr_min)
     }
@@ -145,5 +159,10 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NA)
   }
  return(rcd) 
 }
+
+# t4[t4[,varlist_orig[j]] %in% 328,]
+# 
+#   t4[!is.na(t4[,varlist_orig[j]]) & t4[,varlist_orig[j]] > 211,]
+# summary(t4$tau)
                                                       
 # ------------------------------------ end recode lookup --------------------------------------------
