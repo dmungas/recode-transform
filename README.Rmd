@@ -53,7 +53,7 @@ recodeOrdinal(`df, varlist_orig, varlist_tr, type="interval", ncat=10, nobs=10`)
     - nobs - miminum number of observed responses in each category of the transformed variable   
   - output: data frame that consists of the input data frame with recoded variables   
 
-recodeLookup(`df, varlist_orig, varlist_tr, type="continuous"`)  
+recodeLookup(`df, varlist_orig, varlist_tr, type="continuous", lookup=NULL`)  
 
   - description: This funciton generates a reference table from recoded variables within a dataframe and uses this as a lookup table to recode vales that have not yet been recoded. The lookup values can from the "internal" input data frame or from an "external" table that has contains the original and recoded variables. "Internal" lookup is applicable where a subset of records are used for the original recode and this subset is then used as the reference to recode the other records. This function applies to continuous transformed variables (including but not limited to Blom) and to ordinal transformations.
   - input parameters:  
@@ -64,7 +64,7 @@ recodeLookup(`df, varlist_orig, varlist_tr, type="continuous"`)
     - lookup - NULL (no parameter input, the default) if the input table (df) will be used to lookup recode values; label for the data frame that contains the variables to be recoded if an external table is used. The external table has to be opened as a dataframe, and must contain all of the columns in varlist_orig and varlist_tr. Can be dataframe or dataframe name (in quotes).   
   - output: data frame that consists of the input dataframe with recoded values for all records for recoded variables  
   
-  createLookupTable(`df, varlist_orig, varlist_tr, type="continuous"`)  
+  createLookupTable(`df, varlist_orig, varlist_tr, lookup=NULL`)  
 
   - description: This function generates a reference table from recoded variables within a dataframe that can be used as a lookup table to recode vales that have not yet been recoded. This is applicable for recoded variables that take on integer values.
   - input parameters:  
