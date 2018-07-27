@@ -169,7 +169,7 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
 #   varlist_orig <- blomvarin
 #   varlist_tr <- blomvarout
 #   type <- "continuous"
-#   lookup <- NA
+#   lookup <- NULL
 
 recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NULL) {
     if (is.data.frame(df)){
@@ -177,11 +177,15 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NUL
     } else {
         rcd <- eval(parse(text=df))
     }
-     if (is.data.frame(lookup)) {
-        rcdlu <- lookup[,c(varlist_orig,varlist_tr)]
-    } else {
-        rcdlu <- eval(parse(text=lookup))
-        rcdlu <- rcdlu[,c(varlist_orig,varlist_tr)]
+    if (is.null(lookup)){
+        rcdlu <- rcd[,c(varlist_orig,varlist_tr)]
+    } else{
+        if (is.data.frame(lookup)) {
+            rcdlu <- lookup[,c(varlist_orig,varlist_tr)]
+        } else {
+            rcdlu <- eval(parse(text=lookup))
+            rcdlu <- rcdlu[,c(varlist_orig,varlist_tr)]
+        }
     }
     for (j in 1:length(varlist_orig)){
         t5 <- unique(rcdlu[!is.na(rcdlu[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
@@ -253,11 +257,15 @@ createLookupTable <- function(df,varlist_orig,varlist_tr,lookup=NULL) {
     } else {
         rcd <- eval(parse(text=df))
     }
-    if (is.data.frame(lookup)) {
-        rcdlu <- lookup[,c(varlist_orig,varlist_tr)]
-    } else {
-        rcdlu <- eval(parse(text=lookup))
-        rcdlu <- rcdlu[,c(varlist_orig,varlist_tr)]
+    if (is.null(lookup)){
+        rcdlu <- rcd[,c(varlist_orig,varlist_tr)]
+    } else{
+        if (is.data.frame(lookup)) {
+            rcdlu <- lookup[,c(varlist_orig,varlist_tr)]
+        } else {
+            rcdlu <- eval(parse(text=lookup))
+            rcdlu <- rcdlu[,c(varlist_orig,varlist_tr)]
+        }
     }
   for (j in 1:length(varlist_orig)){
     t5 <- unique(rcdlu[!is.na(rcdlu[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
