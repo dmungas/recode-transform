@@ -205,11 +205,17 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NUL
   for (j in 1:length(varlist_orig)){
     if (lu_type == "lookup") {
       luv <- rcdlu[,c("recode_score",paste0("min_",varlist_orig[j]),paste0("max_",varlist_orig[j]))]
-      names(luv) <- sub(paste0("min_",varlist_orig),"orig_min",names(luv))
-      names(luv) <- sub(paste0("max_",varlist_orig),"orig_max",names(luv))
       names(luv) <- sub("recode_score","tr_min",names(luv))
       luv$tr_max <- luv$tr_min
-      colnames(luv) <- c("tr_min","orig_min","orig_max","tr_max")
+      names(luv) <- c("tr_min","orig_min","orig_max","tr_max")
+      luv <- luv[!is.na(luv$orig_min),]
+      for (i in 1:nrow(luv)) {
+        if (i < nrow(luv)) {
+          luv[i,"orig_max"] <- luv[i+1,"orig_min"]
+        } 
+      }
+      # luv$orig_min <- round(luv$orig_min,4)
+      # luv$orig_max <- round(luv$orig_max,4)
     } else {
       t5 <- unique(rcdlu[!is.na(rcdlu[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
       t5 <- t5[order(t5[varlist_orig[j]]),]
@@ -231,7 +237,7 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NUL
                        (SELECT * FROM luv)
                        AS luv1 ON t3.",varlist_orig[j],
                      " >= luv1.orig_min AND t3.", varlist_orig[j],
-                     " <= luv1.orig_max",sep="")
+                     " < luv1.orig_max",sep="")
     } else {
       sqlcd <- paste("SELECT * FROM t3 AS t3
                        LEFT JOIN
@@ -248,7 +254,9 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NUL
               (t4$tr_max - t4$tr_min) ) + t4$tr_min))
       #       t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],( ( (t4[,varlist_orig[j]] - t4$orig_min) / (t4$orig_max - t4$orig_min) ) * (t4$tr_max - t4$tr_min) ) + t4$tr_min)
     } else {
-      t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],t4$tr_min)
+      t4[,varlist_tr[j]] <- ifelse(!is.na(t4[,varlist_tr[j]]),t4[,varlist_tr[j]],
+        ifelse(t4[,varlist_orig[j]] >= max(t4$orig_max,na.rm=TRUE),max(t4$tr_max,na.rm=TRUE),
+        t4$tr_min))
     }
     rcd[,varlist_tr[j]] <- t4[,varlist_tr[j]]
   }
