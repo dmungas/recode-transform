@@ -149,7 +149,7 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
 # =================================== Recode Lookup ========================================= 
 
 # recodeLookup generates a reference table from recoded variables within a dataframe and uses
-#   this as a lookup table to recode vales that have not yet been recoded. This is applicable
+#   this as a lookup table to recode values that have not yet been recoded. This is applicable
 #   where a subset of records are used for the original recode and this subset is then used 
 #   as the reference to recode the other records. It is applicable for continuous transformed variables
 #   (including but not limited to Blom) and for ordinal transformations.
@@ -171,14 +171,17 @@ recodeOrdinal <- function(df,varlist_orig,varlist_tr,type="interval",ncat=10, no
 #     frame that contains original and transformed variables.
 #     
 
-#   df <- "adni_imag"
+#   df <- "npsy1"
 #   varlist_orig <- blomvarin
 #   varlist_tr <- blomvarout
 #   type <- "continuous"
 #   lookup <- NULL
+#   lookup <- npsy1
+#   lu_type="data"
 
 recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NULL,
-                         lu_type="data") {
+      lu_type="data") {
+  require(sqldf)
   if (is.data.frame(df)){
     rcd <- df
   } else {
@@ -203,7 +206,7 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NUL
     }
   }
   for (j in 1:length(varlist_orig)){
-    if (lu_type == "lookup") {
+      if (lu_type == "lookup") {
       luv <- rcdlu[,c("recode_score",paste0("min_",varlist_orig[j]),paste0("max_",varlist_orig[j]))]
       names(luv) <- sub("recode_score","tr_min",names(luv))
       luv$tr_max <- luv$tr_min
@@ -218,7 +221,8 @@ recodeLookup <- function(df,varlist_orig,varlist_tr,type="continuous",lookup=NUL
       # luv$orig_max <- round(luv$orig_max,4)
     } else {
       t5 <- unique(rcdlu[!is.na(rcdlu[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
-      t5 <- t5[order(t5[varlist_orig[j]]),]
+      t5 <- t5 %>% arrange(.data[[varlist_orig[j]]])
+      # t5 <- t5[order(t5[varlist_orig[j]]),]
       luv <- as.data.frame(cbind(t5,rbind(t5[2:nrow(t5),],c(NA,NA))))
       colnames(luv) <- c("orig_min","tr_min","orig_max","tr_max")
     }
@@ -305,7 +309,8 @@ createLookupTable <- function(df,varlist_orig,varlist_tr,lookup=NULL) {
     }
   for (j in 1:length(varlist_orig)){
     t5 <- unique(rcdlu[!is.na(rcdlu[,varlist_tr[j]]),c(varlist_orig[j],varlist_tr[j])])
-    t5 <- t5[order(t5[varlist_orig[j]]),]
+    t5 <- t5 %>% arrange(.data[[varlist_orig[j]]])
+    # t5 <- t5[order(t5[varlist_orig[j]]),]
     colnames(t5) <- c("orig","recode_score")
     t6 <- t5 %>% group_by(recode_score) %>%
       summarise(
